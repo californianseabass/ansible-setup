@@ -1,0 +1,9 @@
+- hosts: local
+  connection: local
+  remote_user: seabass
+  tasks:
+          name: download golang binary
+          get_url:
+                  url: https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz
+                  dest: /tmp/go1.13.5.linux-amd64.tar.gz
+                  checksum: 27d356e2a0b30d9983b60a788cf225da5f914066b37a6b4f69d457ba55a626ff

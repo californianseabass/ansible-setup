@@ -1,0 +1,47 @@
+---
+
+- name: install and configure emacs
+  hosts: local
+  connection: local
+  become: yes
+  tasks:
+          - name: run the equivalent of apt-get update in a seperate step
+            apt:
+                  update_cache: yes
+                  cache_valid_time: 86400 # One day
+          - name: install emacs using application manager
+            apt:
+                    name: emacs
+                    state: latest
+                    update_cache: yes
+          - name: make sure /developer directory exists
+            file:
+                    path: /home/seabass/developer/
+                    state: directory
+                    owner: seabass
+                    group: seabass
+          - name: download git init.el file
+            git:
+                    repo: https://github.com/californianseabass/dotfiles.git 
+                    dest: /home/seabass/developer/dotfiles/
+                    accept_hostkey: yes
+          - name: change permissions on the dotfiles directory
+            file:
+                    path: /home/seabass/developer/dotfiles
+                    state: directory
+                    owner: seabass
+                    group: seabass
+                    recurse: yes
+          - name: create emacs dot file directory
+            file:
+                    path: /home/seabass/.emacs.d/
+                    state: directory
+                    owner: seabass
+                    group: seabass
+          - name: place the init.el into the $HOME/.emacs directory
+            file:
+                    src: /home/seabass/developer/dotfiles/emacs.d/init.el
+                    state: link
+                    path: /home/seabass/.emacs.d/init.el
+                    mode: u=rw,g=rw,o=rw
+
