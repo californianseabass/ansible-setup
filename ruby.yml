@@ -1,0 +1,23 @@
+---
+
+- name: install rbenv to manage different ruby installations
+  hosts: local
+  connection: local
+  tasks:
+          - name: download the git repo containing rbenv
+            git:
+                    repo: https://github.com/rbenv/rbenv.git
+                    dest: /home/seabass/.rbenv
+          - name: add rbenv to path
+            lineinfile:
+                    path: /home/seabass/.bash_profile
+                    line: "{{ item }}" 
+                    create: yes
+            with_items:
+                    - 'export PATH="$HOME/.rbenv/bin:$PATH"' 
+                    - 'eval "$(rbenv init -)" '
+          - name: 'install the "rbenv install" plugin, ruby-build'
+            git:
+                    repo: https://github.com/rbenv/ruby-build.git
+                    dest: /home/seabass/.rbenv/plugins/ruby-build
+
