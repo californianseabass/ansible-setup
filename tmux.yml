@@ -1,0 +1,25 @@
+---
+
+- name: setup tmux.conf as $HOME/.tmux.conf
+  hosts: local
+  connection: local
+  tasks:
+          - name: make sure dotfiles git file is downloaded
+            git:
+                    repo: git@github.com:californianseabass/dotfiles
+                    dest: /home/seabass/developer/dotfiles
+                    accept_hostkey: yes
+          - name: change permissions on the dotfiles directory
+            file:
+                    path: /home/seabass/developer/dotfiles
+                    state: directory
+                    owner: seabass
+                    group: seabass
+                    recurse: yes
+          - name: symlink from dotfiles to ~/.tmux.conf
+            file:
+                    src: /home/seabass/developer/dotfiles/tmux_conf
+                    state: link
+                    path: /home/seabass/.tmux_conf
+                    mode: u=rw,g=rw,o=rw
+
