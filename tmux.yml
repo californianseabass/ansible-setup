@@ -20,6 +20,6 @@
             file:
                     src: /home/seabass/developer/dotfiles/tmux_conf
                     state: link
-                    path: /home/seabass/.tmux_conf
+                    path: /home/seabass/.tmux.conf
                     mode: u=rw,g=rw,o=rw
 
