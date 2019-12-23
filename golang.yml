@@ -1,9 +1,38 @@
 - hosts: local
   connection: local
   remote_user: seabass
+  become: yes
   tasks:
-          name: download golang binary
-          get_url:
+          - name: download golang binary
+            get_url:
                   url: https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz
                   dest: /tmp/go1.13.5.linux-amd64.tar.gz
-                  checksum: 27d356e2a0b30d9983b60a788cf225da5f914066b37a6b4f69d457ba55a626ff
+                  checksum: sha256:512103d7ad296467814a6e3f635631bd35574cab3369a97a323c9a585ccaa569
+          - name: create directory to untar golang distribution into
+            file:
+                    path:  /usr/local/go
+                    state: directory
+                    owner: root
+                    group: root
+                    mode: '755'
+          - name: untar the file into /usr/local
+            unarchive:
+                    src: /tmp/go1.13.5.linux-amd64.tar.gz
+                    dest: /usr/local/go
+          - name: create directory to hold globally installed go packages
+            file:
+                    path: /home/seabass/go_wrkspc
+                    state: directory
+                    owner: root
+                    group: root
+                    mode: '777'
+          - name: add GOPATH to bash_profile
+            lineinfile:
+                    path: /home/seabass/.bash_profile
+                    create: yes
+                    state: present
+                    line:  "{{ item }}"
+            with_items:
+                    - 'export PATH=/usr/local/go/bin:$PATH'
+                    - 'export GOPATH="$HOME/go_wrkspc"'
+                    - 'export PATH="$GOPATH/bin:$PATH"'
