@@ -1,0 +1,34 @@
+---
+
+- name: install lua
+  hosts: local
+  connection: local
+  become: yes
+  tasks:
+          - name: download tar
+            get_url:
+                    url: https://www.lua.org/ftp/lua-5.3.5.tar.gz
+                    dest: /tmp/lua-5.3.5.tar.gz
+                    checksum: 'md5:4f4b4f323fd3514a68e0ab3da8ce3455'
+          - name: create dir for lua
+            file:
+                    path: /usr/local/lua
+                    state: directory
+          - name: unpack tarball into /usr/local
+            unarchive:
+                    src: /tmp/lua-5.3.5.tar.gz
+                    dest: /usr/local/lua
+                    group: seabass
+                    owner: seabass
+                    mode: '755'
+                    extra_opts: [--strip-components=1]
+          - name: run make to install lua
+            make:
+                    chdir: /usr/local/lua
+                    target: linux
+          - name: add lua compiler to path
+            file:
+                    path: /usr/local/bin/lua
+                    src: /usr/local/lua/src/lua
+                    state: link
+
