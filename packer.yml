@@ -1,0 +1,24 @@
+---
+
+- name: install terraform packer
+  connection: local
+  hosts: local
+  become: yes
+  tasks:
+          - name: apt install deps
+            apt:
+                    name: unzip
+                    update_cache: yes
+                    cache_valid_time: 86400
+          #- name: download the binary from packer.io/downloads.html
+            #get_url:
+                    #url: https://releases.hashicorp.com/packer/1.5.1/packer_1.5.1_linux_amd64.zip
+                    #dest: /tmp/
+          - name: create /usr/local/packer
+            file:
+                    path: /usr/local/packer
+                    state: directory
+          - name: unzip file into /usr/local/bin
+            unarchive:
+                    src: /tmp/packer_1.5.1_linux_amd64.zip
+                    dest: /usr/local/bin
