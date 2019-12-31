@@ -1,0 +1,28 @@
+---
+- name: install wrk on ubuntu/debian using apt-get
+  hosts: local
+  connection: local
+  become: yes
+  tasks:
+          - name: make sure deps are installed
+            apt:
+                    name: "{{ item }}"
+                    update_cache: yes
+                    cache_valid_time: 86400 # One day
+            with_items:
+                    - build-essential
+                    - libssl-dev
+                    - git
+          - name: git clone to /usr/local
+            git:
+                     repo: https://github.com/wg/wrk.git
+                     dest: /usr/local/wrk
+          - name: run make install
+            make:
+                    chdir: /usr/local/wrk
+                    target: all
+          - name: sumlink binary to /usr/local/bin
+            file:
+                    path: /usr/local/bin/wrk
+                    src: /usr/local/wrk/wrk
+                    state: link
