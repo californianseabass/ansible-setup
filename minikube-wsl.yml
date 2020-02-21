@@ -1,0 +1,25 @@
+# https://medium.com/@joaoh82/setting-up-kubernetes-on-wsl-to-work-with-minikube-on-windows-10-90dac3c72fa1
+- hosts: local
+  connection: local
+  tasks:
+        - name: create minikube directory in home directory
+          file:
+                path: /home/seabass/minikube
+                state: directory
+                mode: '755'
+        - name: create file to redirect command to windows minikube
+          lineinfile:
+                path: /home/seabass/minikube/minikube
+                line:  "{{ item }}"
+                state: present
+                mode: '700'
+                create: yes
+          with_items:
+                - "#!/bin/sh"
+                - /mnt/c/ProgramData/chocolatey/bin/minikube.exe $@
+        - name: add GOPATH to bash_profile
+          lineinfile:
+                path: /home/seabass/.bash_profile
+                create: yes
+                state: present
+                line: export PATH="$HOME/minikube:$PATH"
