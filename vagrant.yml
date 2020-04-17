@@ -1,0 +1,22 @@
+---
+- name: install hashicorp vagrant, make sure to download latest version from site
+  hosts: local
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: download the binary from packer.io/downloads.html
+      get_url:
+        url: https://releases.hashicorp.com/vagrant/2.2.7/vagrant_2.2.7_linux_amd64.zip
+        dest: /tmp/vagrant.zip
+    - name: unzip file into /usr/local/bin
+      unarchive:
+        src: /tmp/vagrant.zip
+        dest: /usr/local/bin
+    # https://www.vagrantup.com/docs/other/wsl.html
+    - name: add environment variable to enable access to underlying windows machine for WSL
+      lineinfile:
+        line: export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"
+        path: /home/seabass/.bash_profile
+        create: yes
+        mode: 0644
+        
