@@ -32,4 +32,23 @@
                    - docker-ce
                    - docker-ce-cli
                    - containerd.io
+          # https://docs.docker.com/compose/install/
+          - name: get distribution
+            command: uname -s
+            register: distribution_name
+          - name: get distribution architecture
+            command: uname -m
+            register: distribution_arch
+          - name: download binary from docker website
+            get_url:
+                url: "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-{{ distribution_name.stdout }}-{{ distribution_arch.stdout }}"
+                dest: /usr/local/bin/docker-compose
+                mode: "+x"
+          - name: add docker host line to ~/.bash_profile
+            lineinfile:
+                path: /home/seabass/.bash_profile
+                create: yes
+                state: present
+                line: export DOCKER_HOST=tcp://localhost:2375
  
+
