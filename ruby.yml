@@ -16,6 +16,15 @@
             with_items:
                     - 'export PATH="$HOME/.rbenv/bin:$PATH"' 
                     - 'eval "$(rbenv init -)" '
+                    - 'export GEM_HOME="$HOME/.gems"'
+                    - 'export PATH="$GEM_HOME/bin:$PATH"'
+          - name: make sure a local and writable directory exists for installing gems, othewise binaries will not be executable
+            file:
+                path: /home/seabass/.gems
+                state: directory
+                owner: seabass
+                group: seabass
+                mode: '777'
           - name: 'install the "rbenv install" plugin, ruby-build'
             git:
                     repo: https://github.com/rbenv/ruby-build.git
