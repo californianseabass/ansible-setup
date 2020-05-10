@@ -5,13 +5,17 @@
   connection: local
   become: yes
   tasks:
+          #- name: add repository
+          #  apt_repository:
+          #       repo: deb http://ppa.launchpad.net/kelleyk/emacs/ubuntu bionic main
+          #       state: present
           - name: run the equivalent of apt-get update in a seperate step
             apt:
                   update_cache: yes
                   cache_valid_time: 86400 # One day
           - name: install emacs using application manager
             apt:
-                    name: emacs
+                    name: emacs26
                     state: latest
                     update_cache: yes
           # https://www.mydailytutorials.com/ansible-create-directory/
