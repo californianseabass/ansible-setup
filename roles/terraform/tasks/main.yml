@@ -1,0 +1,49 @@
+---
+# tasks file for terraform
+- name: install graphiz
+  apt:
+    name: graphviz
+    update_cache: yes
+    cache_valid_time: 86400
+  when: ansible_distribution == 'Ubuntu'
+- name: include os specific variables
+  include_vars: "{{ lookup('first_found', possible_files) }}"
+  vars:
+    possible_files:
+      - "vars/{{ ansible_distribution }}.yml"
+      - "vars/{{ ansible_os_family }}.yml"
+      - vars/main.yml
+  tags: vars
+- name: apt install deps
+  apt:
+    name: unzip
+    update_cache: yes
+    cache_valid_time: 86400
+  when: ansible_distribution == 'Ubuntu'
+- name: check to see if the terraform binary for our version alread exists on the system
+  stat:
+    checksum_algorithm: sha256
+    path: "/opt/terraform-{{ TERRAFORM_VERSION }}"
+  register: binary_stat
+
+- name: download and place in /opt versioned binary
+  when: binary_stat.stat.exists == False
+  block:
+    - name: download the binary from the hashicorp site
+      get_url:
+        url: "https://releases.hashicorp.com/terraform/{{ TERRAFORM_VERSION }}/{{ TERRAFORM_DISTRIBUTION_PACKAGE }}"
+        checksum: "{{ TERRAFORM_CHECKSUM }}"
+        dest: /tmp/
+    - name: unzip binary into /opt
+      unarchive:
+        src: "/tmp/{{ TERRAFORM_DISTRIBUTION_PACKAGE }}"
+        dest: "/opt/"
+    - name: version the terraform binary
+      command: "mv /opt/terraform /opt/terraform-{{ TERRAFORM_VERSION }}"
+- name: link terraform file to /usr/local/bin
+  file:
+    src: "/opt/terraform-{{ TERRAFORM_VERSION }}"
+    dest: /usr/local/bin/terraform
+    state: link
+    force: yes
+    mode: 777
