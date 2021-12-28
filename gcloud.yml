@@ -1,0 +1,30 @@
+---
+- name: install gcloud cli
+  connection: local
+  hosts: local
+  remote_user: seabass
+  become: yes
+  tasks:
+         - name: ensure deps are installed
+           apt:
+                    name: gnupg
+                    state: latest
+                    update_cache: yes
+                    cache_valid_time: 86400 # One day
+         - name: add gcloud distribution URI to apt
+           apt_repository:
+                    repo: deb https://packages.cloud.google.com/apt cloud-sdk main
+                    state: present
+         - name: add apt key
+           apt_key:
+                   url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+                   state: present
+         - name: install gcloud cli from package manager
+           apt:
+                    name: google-cloud-sdk
+                    state: latest
+                    update_cache: yes
+                    cache_valid_time: 86400 # One day
+
+
+

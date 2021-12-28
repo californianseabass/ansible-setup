@@ -1,0 +1,16 @@
+---
+- name: install racket on ubuntu
+  connection: local
+  hosts: local
+  become: yes
+  tasks:
+        - name: download the binaries
+          apt_repository:
+                repo: 'ppa:plt/racket'
+                state: present
+        - name: install racket through apt
+          apt:
+                name: racket
+                update_cache: yes
+                cache_valid_time: 86400
+  

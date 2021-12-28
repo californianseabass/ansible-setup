@@ -1,0 +1,26 @@
+---
+- name: install mysql on an ubuntu box
+  hosts: local
+  connection: local
+  become: yes
+  tasks:
+          - name: install through package manager
+            apt:
+                    name: mysql
+                    state: 5.6
+                    update_cache: yes
+          - name: start the service
+            service:
+                    name: mysql
+                    state: started
+                    enabled: true
+          - name: update the .cnf file to include a root user
+            lineinfile:
+                    path: /etc/mysql/mysql.cnf
+                    line: "{{ item }}"
+            with_items:
+                    - "[client]"
+                    - "user=root"
+                    - "password={{ root_password | default('root') }}"
+                      
+

@@ -1,0 +1,22 @@
+---
+- name: install firefox
+  connection: local
+  hosts: local
+  become: yes
+  tasks:
+          - name: install dbus-x11 depedency using apt-get
+            apt:
+                    name: dbus-x11
+                    update_cache: yes
+                    cache_valid_time: 86400
+          - name: start up dbus-x11 service
+            service:
+                    name: dbus
+                    state: started
+          - name: install ubuntu desktop depedency using apt-get
+            apt:
+                    name: ubuntu-desktop
+                    update_cache: yes
+                    cache_valid_time: 86400
+
+

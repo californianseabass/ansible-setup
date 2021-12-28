@@ -1,0 +1,22 @@
+---
+
+- name: setup bash_profile and bashrc
+  hosts: local
+  connection: local
+  tasks:
+          - name: update bash profile
+            lineinfile:
+                    dest: /home/seabass/.bash_profile
+                    create: yes
+                    state: present
+                    line: "{{ item }}"
+            with_items:
+                    - "export EDITOR=vim"
+           name: update bashrc to source bash_profile
+            lineinfile:
+                    dest: /home/seabass/.bashrc
+                    create: no
+                    state: present
+                    line: "source $HOME/.bash_profile"
+
+

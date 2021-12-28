@@ -1,0 +1,33 @@
+---
+- name: include os specific variables
+  include_vars: "{{ lookup('first_found', possible_files) }}"
+  vars:
+    possible_files:
+      - "vars/{{ ansible_distribution }}.yml"
+      - "vars/{{ ansible_os_family }}.yml"
+      - vars/main.yml
+  tags: vars
+
+# tasks file for vagrant
+- name: download the binary from packer.io/downloads.html
+  get_url:
+    url: "https://releases.hashicorp.com/vagrant/{{vagrant_version}}/{{ os_specific_version }}"
+    dest: /tmp/vagrant.deb
+    checksum: "sha256:{{ checksum }}" 
+- name: install the deb package
+  apt:
+    deb: /tmp/vagrant.deb
+# https://www.vagrantup.com/docs/other/wsl.html
+- name: add environment variable to enable access to underlying windows machine for WSL
+  lineinfile:
+    line: '{{ item }}'
+    path: /home/seabass/.bash_profile
+    create: yes
+    mode: 0644
+  with_items:
+    - export VAGRANT_WSL_ENABLE_WINDOWS_ACCESS="1"
+    - export VAGRANT_DEFAULT_PROVIDER="vmware-desktop"
+    #- export PATH="$PATH:/mnt/c/Program Files/Oracle/VirtualBox"
+  tags:
+    bash_profile
+

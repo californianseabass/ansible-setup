@@ -1,0 +1,16 @@
+---
+- name: setup pulumi to use gcloud installation
+  connection: local
+  hosts: local
+  tasks:
+          - name: add env variables to bash_profile
+            lineinfile:
+                    line: "{{ item }}"
+                    path: /home/seabass/.bash_profile
+                    state: present
+                    create: yes
+            with_items:
+                    - "GOOGLE_REGION=us-west1"
+                    - "GOOGLE_PROJECT=californianseabass"
+
+

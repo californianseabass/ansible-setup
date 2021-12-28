@@ -1,0 +1,40 @@
+---
+
+- name: install useful ruby packages for development
+  hosts: local
+  connection: local
+  tasks:
+        - name: install gem dependencies
+          gem:
+                name: "{{ item }}"
+                include_doc: yes
+                state: latest
+                install_dir: /home/seabass/.gems
+                user_install: no
+          with_items: 
+                - seeing_is_believing
+                - pry
+                - pry-doc
+                - method_source
+        - name: configure pry to be emacs friendly
+          lineinfile:
+                  path: /home/seabass/.pryrc
+                  create: yes
+                  state: present
+                  line: "{{ item }}"
+          with_items:
+                  - if ENV['INSIDE EMACS']
+                  - "  Pry.config.correct_indent = false"
+                  - "  Pry.config.pager = false"
+                  - end
+                  - Pry.config.editor = emacsclient
+        - name: update irb buffer to use pry
+          lineinfile:
+                 path: /home/seabass/.irbrc
+                 create: yes
+                 state: present
+                 line: "{{ item }}"
+          with_items:
+                  - "require 'pry'"
+                  - "Pry.start"
+                  - "exit"

@@ -1,0 +1,12 @@
+---
+- name: install slapd ldap server
+  hosts: local
+  become: yes
+  tasks:
+    - name: install slapd and ldap-utils
+      apt:
+        pkg:
+          - slapd
+          - ldap-utils
+        update_cache: yes
+        cache_valid_time: 86400 # one day

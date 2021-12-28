@@ -1,0 +1,17 @@
+- hosts: local
+  connection: local
+  become: yes
+  vars:
+    DOMAIN: gitlab.com
+    USER: git
+    SSH_PUBKEY_PATH: "{{ lookup('env', 'HOME') }}/.ssh/config"
+  tasks:
+    - name: make sure ssh-keygen dependency is installed
+      apt:
+        name: keychain
+        state: latest
+        update_cache: yes
+        cache_valid_time: 86400
+    # - name: create gitlab ssh key
+    #   openssh_keypair:
+    #     path: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.gitlab"

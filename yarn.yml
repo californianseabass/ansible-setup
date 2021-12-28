@@ -1,0 +1,19 @@
+---
+- name: install yarn javascript package manager
+  connection: local
+  hosts: local
+  become: yes
+  tasks:
+          - name: install yarn gpg apt key
+            apt_key:
+                    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+          - name: add yarn repository
+            apt_repository:
+                    repo: deb https://dl.yarnpkg.com/debian/ stable main
+                    state: present
+          - name: install yarn through apt
+            apt:
+                    name: yarn
+                    update_cache: yes
+                    cache_valid_time: 86400
+

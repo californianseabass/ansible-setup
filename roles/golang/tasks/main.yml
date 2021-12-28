@@ -1,0 +1,41 @@
+---
+- name: include os specific variables
+  include_vars: "{{ lookup('first_found', possible_files) }}"
+  vars:
+    possible_files:
+      - "vars/{{ ansible_distribution }}.yml"
+      - "vars/{{ ansible_os_family }}.yml"
+      - vars/main.yml
+  tags: vars
+- name: download golang binary
+  get_url:
+    url: "{{DOWNLOAD_BASE_PATH }}/go{{ version }}.tar.gz"
+    dest: /tmp/go{{ version }}.tar.gz
+    checksum: "sha256:{{ checksum }}"
+    force: yes
+- name: create directory to untar golang distribution into
+  file:
+    path:  /usr/local/go
+    state: directory
+    owner: root
+    group: root
+    mode: '755'
+- name: untar the file into /usr/local
+  unarchive:
+    src: /tmp/go{{ version }}.tar.gz
+    dest: /usr/local/go
+- name: create directory to hold globally installed go packages
+  file:
+    path: "{{ lookup('env','HOME') }}/go_wrkspc"
+    state: directory
+    mode: '777'
+- name: add GOPATH to bash_profile
+  lineinfile:
+    path: "{{ lookup('env','HOME') }}/.bash_profile"
+    create: yes
+    state: present
+    line:  "{{ item }}"
+  with_items:
+    - 'export PATH=/usr/local/go/bin:$PATH'
+    - 'export GOPATH="$HOME/go_wrkspc"'
+    - 'export PATH="$GOPATH/bin:$PATH"'
